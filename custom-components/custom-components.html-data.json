@@ -1,0 +1,33 @@
+{
+  "version": 1.1,
+  "tags": [
+    {
+      "name": "cp-accordion",
+      "description": "custom-components 手风琴折叠面板控制组件",
+      "attributes": [
+        {
+         "name": "active-keys",
+         "description": "受控状态,当前打开的折叠面板数组,值为JSON数组字符串"
+        }
+      ]
+    },
+    {
+      "name": "cp-accordion-item",
+      "description": "custom-components 手风琴折叠面板单项",
+      "attributes": [
+        {
+          "name": "open",
+          "description": "当前这个折叠面板是否展开",
+          "values": [
+            {
+              "name": "true"
+            },
+            {
+              "name": "false"
+            }
+          ] 
+        }
+      ]
+    }
+  ]
+}
