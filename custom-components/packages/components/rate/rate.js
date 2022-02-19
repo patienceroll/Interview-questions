@@ -1,0 +1,172 @@
+import { __decorate } from '../../../node_modules/tslib/tslib.es6.js';
+import { style, watch } from '../../utils/decorators.js';
+import useLatestCall from '../../utils/use-latest-call.js';
+import { dispatchCustomEvent } from '../../utils/event.js';
+
+var CpRate_1;
+let CpRate = CpRate_1 = class CpRate extends HTMLElement {
+    constructor() {
+        super();
+        /** 如果是受控的评分,会把value的值同步过来,如果是非受控的,则在组件内部控制 */
+        this.realValue = this.highest;
+        const shadowRoot = this.attachShadow({ mode: 'open' });
+        shadowRoot.adoptedStyleSheets = [CpRate_1.styleSheet];
+        const slot = document.createElement('slot');
+        this.addEventListener('cp-rate-item-rate', (event) => {
+            const { detail } = event;
+            const { value, rateItem } = detail;
+            const rateItems = Array.from(this.rateItems.values());
+            const index = rateItems.findIndex((item) => item === rateItem);
+            if (index !== -1) {
+                const { lightRateNum, partOfLightRateValue, perRateItemValue } = this.calculateRenderParams(((index + value) * this.highest) / rateItems.length);
+                const newRealValue = lightRateNum * perRateItemValue + partOfLightRateValue;
+                const valueAttr = this.getAttribute('value');
+                /** 如果是非受控的,才会去渲染评分 */
+                if (!valueAttr || Number.isNaN(Number(valueAttr))) {
+                    this.renderLightItem(lightRateNum, partOfLightRateValue / perRateItemValue);
+                    this.realValue = newRealValue;
+                }
+                dispatchCustomEvent(this, 'change', {
+                    value: newRealValue,
+                    nativeEvent: event,
+                });
+            }
+        });
+        this.addEventListener('cp-rate-item-moverate', (event) => {
+            const { detail } = event;
+            const { value, rateItem } = detail;
+            const rateItems = Array.from(this.rateItems.values());
+            const index = rateItems.findIndex((item) => item === rateItem);
+            if (index !== -1) {
+                const { lightRateNum, partOfLightRateValue, perRateItemValue } = this.calculateRenderParams(((index + value) * this.highest) / rateItems.length);
+                this.renderLightItem(lightRateNum, partOfLightRateValue / perRateItemValue);
+                dispatchCustomEvent(this, 'changehover', {
+                    value: lightRateNum * perRateItemValue + partOfLightRateValue,
+                    nativeEvent: event,
+                });
+            }
+        });
+        /** useLatestcall 的原因是,rateItem 的 moverate 也使用了 useLatestcall,
+         * 保证 mouseleave 是在 moverate之后触发 */
+        this.addEventListener('mouseleave', useLatestCall(() => {
+            const { lightRateNum, partOfLightRateValue, perRateItemValue } = this.calculateRenderParams(this.realValue);
+            this.renderLightItem(lightRateNum, partOfLightRateValue / perRateItemValue);
+        }));
+        shadowRoot.appendChild(slot);
+    }
+    /** 评分组件下的所有 “单个评分” */
+    get rateItems() {
+        return this.querySelectorAll('cp-rate-item');
+    }
+    /** 评分的精度,默认为 5 */
+    get precision() {
+        const precision = this.getAttribute('precision');
+        return precision && !Number.isNaN(precision) ? Number(precision) : 5;
+    }
+    /** 评分的最高值,默认 100 */
+    get highest() {
+        const highest = this.getAttribute('highest');
+        return highest && !Number.isNaN(highest) ? Number(highest) : 100;
+    }
+    /** 当前组件的值 */
+    get value() {
+        const value = this.getAttribute('value');
+        return value && !Number.isNaN(value) ? Number(value) : this.highest;
+    }
+    /** 设置组件展示的真实值 */
+    setRealValue(value) {
+        this.realValue = value;
+        const { lightRateNum, partOfLightRateValue, perRateItemValue } = this.calculateRenderParams(value);
+        this.renderLightItem(lightRateNum, partOfLightRateValue / perRateItemValue);
+    }
+    /** 根据当前分数计算渲染参数 */
+    calculateRenderParams(rate) {
+        const { precision, highest } = this;
+        const rateItems = Array.from(this.rateItems.values());
+        /** 每个星标识的评分值 */
+        const perRateItemValue = highest / rateItems.length;
+        /** 全部点亮的星个数 */
+        const lightRateNum = Math.floor(rate / perRateItemValue);
+        /** 计算部分点亮的单个评分所需要的值 */
+        const rateItemValue = rate % perRateItemValue;
+        /** 部分点亮的单个评分的值按照精度的余数 */
+        const remaindRateItemValue = rateItemValue % precision;
+        /**  部分点亮的星经过精度计算后的值,精度不应该大于单个评分的值,不然会导致显示错误，程序不管这个问题,交由用户控制 */
+        const partOfLightRateValue = parseInt(`${remaindRateItemValue < precision / 2
+            ? rateItemValue - remaindRateItemValue
+            : rateItemValue + (precision - remaindRateItemValue)}`);
+        return {
+            lightRateNum,
+            partOfLightRateValue,
+            perRateItemValue,
+        };
+    }
+    /** 根据需要点亮的星的个数，和部分点亮的星的值渲染 */
+    renderLightItem(lightRateNum, partOfLightRatePercent) {
+        Array.from(this.rateItems.values()).forEach((item, i) => {
+            if (i < lightRateNum) {
+                item.setAttribute('value', '100');
+            }
+            else if (i === lightRateNum) {
+                item.setAttribute('value', `${partOfLightRatePercent * 100}`);
+            }
+            else {
+                item.setAttribute('value', '0');
+            }
+        });
+    }
+    /** 渲染评分 */
+    renderRate() {
+        const { lightRateNum, partOfLightRateValue, perRateItemValue } = this.calculateRenderParams(this.realValue);
+        this.renderLightItem(lightRateNum, partOfLightRateValue / perRateItemValue);
+    }
+};
+CpRate = CpRate_1 = __decorate([
+    style({
+        ':host': {
+            display: 'inline-block',
+            fontSize: '24px',
+            height: '24px',
+            verticalAlign: 'middle',
+        },
+    }),
+    watch({
+        value(newer) {
+            if (newer && !Number.isNaN(Number(newer)))
+                this.setRealValue(Number(newer));
+        },
+        precision() {
+            this.renderRate();
+        },
+        highest() {
+            this.renderRate();
+        },
+        disable(newer) {
+            if (newer === 'true')
+                this.rateItems.forEach((item) => item.setAttribute('disable', newer));
+            else
+                this.rateItems.forEach((item) => item.removeAttribute('disable'));
+        },
+        readonly(newer) {
+            if (newer === 'true')
+                this.rateItems.forEach((item) => item.setAttribute('readonly', newer));
+            else
+                this.rateItems.forEach((item) => item.removeAttribute('readonly'));
+        },
+        'base-color'(newer) {
+            if (newer)
+                this.rateItems.forEach((item) => item.setAttribute('base-color', newer));
+            else
+                this.rateItems.forEach((item) => item.removeAttribute('base-color'));
+        },
+        'light-color'(newer) {
+            if (newer)
+                this.rateItems.forEach((item) => item.setAttribute('light-color', newer));
+            else
+                this.rateItems.forEach((item) => item.removeAttribute('light-color'));
+        },
+    })
+], CpRate);
+var CpRate$1 = CpRate;
+
+export { CpRate$1 as default };
