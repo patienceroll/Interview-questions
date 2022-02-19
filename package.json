@@ -1,0 +1,13 @@
+{
+  "name": "interview-questions",
+  "version": "1.0.0",
+  "description": "前端面试题,用于自己准备面试,同时也用于面试他人。",
+  "main": "index.js",
+  "repository": "git@github.com:patienceroll/Interview-questions.git",
+  "author": "ZhangXianlei",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "commit": "npx git-cz"
+  }
+}
