@@ -6,8 +6,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HTML面试题</title>
   </head>
-  <body>  
-  
-    <script src="../custom-components/packages/index.js"></script>
+  <style>
+    h2 {
+      margin: 0;
+    }
+    body {
+      background-color: #eee;
+    }
+    p {
+      margin: 0;
+      margin-bottom: 0.8em;
+      text-indent: 2em;
+    }
+    ul {
+      padding-left: 0.5em;
+    }
+    ol {
+      padding-left: 3em;
+    }
+    h3 {
+      margin-top: 0.5em;
+      margin-bottom: 0.8em;
+    }
+  </style>
+  <body>
+    <cp-paper>
+      <cp-accordion>
+        <cp-accordion-item>
+          <h2 slot="title">谈谈a标签</h2>
+          <p>
+            HTML &lt;a&gt; 元素(或称锚元素)可以通过它的 href
+            属性创建通向其他网页、文件、同一页面内的位置、电子邮件地址或任何其他
+            URL 的超链接。&lt;a&gt; 中的内容应该应该指明链接的意图。如果存在
+            href 属性,当 &lt;a&gt; 元素聚焦时按下回车键就会激活它
+          </p>
+          <ul>
+            <li>
+              <h3>href</h3>
+              <p>当前超链接指向的 URL 或 URL 片段。</p>
+              <ol>
+                <li>
+                  URL
+                  片段是哈希标记(#)前面的名称,哈希标记指定当前文档中的内部目标位置(HTML
+                  元素的 ID),如果使用 href="#top" 或者 href="#"
+                  链接返回到页面顶部。
+                </li>
+                <li>
+                  URL 不限于基于
+                  Web(HTTP)的文档,也可以使用浏览器支持的任何协议。例如,在大多数浏览器中正常工作的file:、ftp:和
+                  mailto:。
+                </li>
+              </ol>
+            </li>
+
+            <li>
+              <h3>download</h3>
+              <p>
+                此属性指示浏览器当前链接是下载链接,而不是跳转链接,浏览器会打开窗口提示用户保存文件到本地。如果此属性有一个值,则会被当做预填充的文件名。
+              </p>
+              <ol>
+                <li>此属性只在同源的情况下有效。</li>
+                <li>
+                  "/" 和 "\"
+                  符号会转换为下划线。(大部分操作系统的文件名都有标点符号限制,因此浏览器会相应的替换文件名)
+                </li>
+                <li>
+                  当使用 blob:URL 或 data:URL 等 JavaScript
+                  生成的内容,可以不需要同源。
+                </li>
+                <li>
+                  如果 HTTP 头中 Content-Disposition 有一个不同于 download
+                  的文件名, HTTP 头优先于 download 属性。
+                </li>
+              </ol>
+            </li>
+
+            <li>
+              <h3>target</h3>
+              <p>此属性告诉浏览器如何显示链接的资源。</p>
+              <ol>
+                <li>_self 默认值,在当前页面显示。</li>
+                <li>_blank 打开一个新窗口展示。</li>
+                <li>
+                  _parent
+                  如果当前窗口有父级浏览器上下文(如iframe的父页面),则在父级打开链接,如果没有父级,则与_self的行为相同。
+                </li>
+                <li>
+                  _top 在HTML4中响应成完整的,原来的窗口,取消所有其它 frame。
+                  HTML5
+                  中加载成顶层的浏览器上下文,没有parent。如果本来就是顶层,则与_self相同。
+                </li>
+              </ol>
+            </li>
+
+            <li>
+              <h3>ping</h3>
+              <p>
+                值为一个以空格分开的列表,当跳转时,浏览器在后台发送带有正文 PING
+                的 POST 请求,通常用来追踪。
+              </p>
+            </li>
+          </ul>
+        </cp-accordion-item>
+        <cp-accordion-item>
+          <h2 slot="title">简单描述HTML的转义字符</h2>
+          <p>HTML会把以 &lt; 开头的字符解析为标签,所以为了在页面展示 &lt; 字符,需要对它进行转义,让文档不再把文档内容内的 &lt; 解析为标签的开头。同理其他带有 HTML 语义的字符,在页面需要展示的时候,为了避免被解析,也需要转义。</p>
+        </cp-accordion-item>
+      </cp-accordion>
+    </cp-paper>
+    <script src="../custom-components/packages/index.js" type="module"></script>
   </body>
 </html>
